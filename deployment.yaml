@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vpa-check
+spec:
+  selector:
+    matchLabels:
+      app: vpa-check
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: vpa-check
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534 # nobody
+      containers:
+        - name: vpa-check
+          image: registry.k8s.io/ubuntu-slim:0.14 
+          resources:
+            requests:
+              cpu: 100m
+              memory: 50Mi
+            limits:
+              cpu: 200m
+              memory: 100Mi
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - "while true; do timeout 0.5s yes >/dev/null; sleep 0.5s; done"
